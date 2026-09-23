@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────────────────────
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Returns the calling user's Firestore profile document (or null if absent).
+    function userDoc() {
+      return isAuthenticated()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data
+        : null;
+    }
+
+    // Super Admin: role field must be 'super_admin' in Firestore.
+    // This is the only user with full administrative privileges.
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+        request.auth.token.email == 'admin@gmail.com';
+    }
+
+    // Being in the admin GROUP is purely organisational — it does NOT grant
+    // write privileges. Only isSuperAdmin() does.
+    function isInAdminGroup() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('group_id', '') == 'admin';
+    }
+
+    // Check if the calling user has a specific permission assigned.
+    function hasPermission(perm) {
+      return isSuperAdmin() ||
+        (isAuthenticated() &&
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          (
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('permissions', []).hasAny([perm]) ||
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('permissions', []).hasAny(['*'])
+          )
+        );
+    }
+
+    // ── Users Collection ──────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Any authenticated user may read basic profiles (needed for field workers
+      // to access their own profile).
+      allow read: if isAuthenticated();
+
+      // Only Super Admin can create users from the dashboard.
+      allow create: if isSuperAdmin();
+
+      // Super Admin can update any field.
+      // A regular user may update only their own document but cannot change
+      // sensitive fields (role, group_id, user_id, permissions).
+      allow update: if isSuperAdmin() || (
+        isOwner(userId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'role', 'group_id', 'user_id', 'permissions'
+        ])
+      );
+
+      // Only Super Admin can delete user documents.
+      allow delete: if isSuperAdmin();
+
+      // Subcollection: GPS location points written by the Flutter mobile app.
+      match /geo_locations/{locationId} {
+        // Super Admin or the user's own data.
+        allow read: if isSuperAdmin() || isOwner(userId) || hasPermission('view_geo');
+        // Mobile app (field worker) writes their own GPS points.
+        allow create: if isOwner(userId) || isSuperAdmin();
+        // Locations are immutable once recorded; only Super Admin can delete.
+        allow update, delete: if isSuperAdmin();
+      }
+
+      // Subcollection: Monthly accounting records (credits / expenses).
+      match /months/{month} {
+        allow read: if isSuperAdmin() || isOwner(userId) || hasPermission('view_finance');
+
+        match /credits/{creditId} {
+          allow read: if isSuperAdmin() || isOwner(userId) || hasPermission('view_finance');
+          allow write: if isSuperAdmin() || isOwner(userId);
+        }
+
+        match /expenses/{expenseId} {
+          allow read: if isSuperAdmin() || isOwner(userId) || hasPermission('view_finance');
+          allow write: if isSuperAdmin() || isOwner(userId);
+        }
+      }
+    }
+
+    // ── Groups Collection ─────────────────────────────────────────────────────
+    match /groups/{groupId} {
+      // All authenticated users may see groups (needed to populate dropdowns).
+      allow read: if isAuthenticated();
+      // Only Super Admin can create / modify / delete groups.
+      allow write: if isSuperAdmin();
+    }
+
+    // ── Schedules Collection ──────────────────────────────────────────────────
+    match /schedules/{scheduleId} {
+      // All authenticated users may read schedules.
+      allow read: if isAuthenticated();
+      // Only Super Admin can manage schedules.
+      allow write: if isSuperAdmin();
+    }
+  }
+}

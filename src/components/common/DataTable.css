@@ -1,0 +1,119 @@
+.datatable-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.datatable-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.datatable-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 260px;
+}
+
+.datatable-search .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neutral-400);
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.datatable-search input {
+  width: 100%;
+  height: 38px;
+  padding-left: 2.25rem !important;
+  padding-right: 0.875rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.datatable-total-badge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--neutral-500);
+  background-color: var(--neutral-100);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.datatable-empty-cell {
+  padding: var(--space-10) var(--space-4) !important;
+  text-align: center;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.empty-icon {
+  color: var(--neutral-300);
+}
+
+.empty-state p {
+  color: var(--neutral-500);
+  font-size: var(--font-size-sm);
+}
+
+.datatable-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--neutral-500);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: var(--neutral-white);
+  color: var(--neutral-700);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--neutral-100);
+  border-color: var(--neutral-300);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-current-page {
+  font-weight: var(--font-weight-medium);
+  color: var(--neutral-700);
+}

@@ -1,0 +1,55 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.profile-layout-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-6);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.profile-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--font-size-sm);
+}
+
+.info-label {
+  color: var(--neutral-500);
+}
+
+.info-value {
+  color: var(--neutral-900);
+}
+
+.password-change-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field-error {
+  color: var(--danger-main);
+  font-size: var(--font-size-xs);
+  margin-top: 2px;
+}

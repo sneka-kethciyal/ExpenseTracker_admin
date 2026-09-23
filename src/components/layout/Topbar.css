@@ -1,0 +1,138 @@
+.topbar {
+  height: var(--topbar-height);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(8px);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.topbar-menu-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  color: var(--neutral-700);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar-menu-toggle:hover {
+  background-color: var(--neutral-100);
+}
+
+.topbar-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-900);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.topbar-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--neutral-50);
+}
+
+.topbar-clock {
+  color: var(--neutral-700);
+}
+
+.clock-time {
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-900);
+}
+
+.clock-tz {
+  color: var(--neutral-400);
+  font-size: 0.7rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.connected {
+  background-color: var(--success-main);
+  box-shadow: 0 0 6px var(--success-main);
+}
+
+.status-dot.demo {
+  background-color: var(--warning-main);
+  box-shadow: 0 0 6px var(--warning-main);
+}
+
+.topbar-status-demo {
+  background-color: var(--warning-bg);
+  border-color: var(--warning-border);
+  color: var(--warning-text);
+}
+
+.topbar-status-connected {
+  background-color: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+.topbar-user-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.35rem 0.75rem;
+  background-color: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-700);
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 var(--space-4);
+  }
+
+  .topbar-menu-toggle {
+    display: flex;
+  }
+
+  .clock-tz {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar-status-connected,
+  .topbar-status-demo {
+    display: none;
+  }
+}

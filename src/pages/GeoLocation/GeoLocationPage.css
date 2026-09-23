@@ -1,0 +1,95 @@
+.geo-location-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.geo-controls-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  flex-wrap: wrap;
+}
+
+.geo-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 220px;
+  flex: 1;
+}
+
+.geo-schedule-status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--primary-50);
+  border-color: var(--primary-200);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.banner-icon {
+  color: var(--primary-600);
+  flex-shrink: 0;
+}
+
+.banner-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.banner-sched-text {
+  font-size: var(--font-size-xs);
+  color: var(--primary-800);
+  margin-top: 2px;
+}
+
+.banner-rule-pill {
+  font-size: var(--font-size-xs);
+  color: var(--primary-700);
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--primary-200);
+}
+
+.geo-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.geo-metric-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tile-label {
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--neutral-500);
+  letter-spacing: 0.05em;
+}
+
+.tile-val {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--neutral-900);
+}
+
+.tile-sub {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-400);
+}

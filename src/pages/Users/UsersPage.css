@@ -1,0 +1,108 @@
+.users-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.page-header h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--neutral-900);
+}
+
+.page-header p {
+  color: var(--neutral-500);
+  font-size: var(--font-size-sm);
+  margin-top: 2px;
+}
+
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.users-filter-bar {
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 200px;
+}
+
+.user-table-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.user-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  color: var(--neutral-white);
+  flex-shrink: 0;
+}
+
+.user-avatar-circle.admin {
+  background-color: var(--primary-600);
+}
+
+.user-avatar-circle.worker {
+  background-color: var(--neutral-600);
+}
+
+.user-profile-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-username-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--neutral-900);
+}
+
+.user-email-label {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-400);
+}
+
+.user-created-date {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-600);
+}
+
+.user-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.action-deactivate:hover {
+  color: var(--danger-main) !important;
+  background-color: var(--danger-bg) !important;
+}
+
+.action-activate:hover {
+  color: var(--success-main) !important;
+  background-color: var(--success-bg) !important;
+}

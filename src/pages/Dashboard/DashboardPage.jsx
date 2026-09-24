@@ -35,6 +35,7 @@ export default function DashboardPage() {
     activeUsers: 0,
   });
   const [groupStats, setGroupStats] = useState([]);
+  const [allGroups, setAllGroups] = useState([]);
   const [recentUsers, setRecentUsers] = useState([]);
 
   const loadDashboardData = useCallback(async () => {
@@ -66,23 +67,16 @@ export default function DashboardPage() {
         if (user.group_id) counts[user.group_id] = (counts[user.group_id] || 0) + 1;
         return counts;
       }, {});
-      const nextGroupStats = groups
-        .filter((group) => {
-          const groupName = group.name?.trim().toLowerCase();
-          return group.id !== 'admin'
-            && group.id !== 'field_worker'
-            && groupName !== 'supervisor'
-            && groupName !== 'field worker';
-        })
-        .map((group) => ({
-          ...group,
-          userCount: groupCounts[group.id] || 0,
-        }));
+      const nextGroupStats = groups.map((group) => ({
+        ...group,
+        userCount: groupCounts[group.id] || 0,
+      }));
 
       setStats({
         totalUsers,
         activeUsers,
       });
+      setAllGroups(groups);
       setGroupStats(nextGroupStats);
 
       setRecentUsers(workforceUsers.slice(0, 6));
@@ -92,7 +86,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [selectedDate, showToast]);
 
   useEffect(() => {
     loadDashboardData();
@@ -202,24 +196,28 @@ export default function DashboardPage() {
               <tr>
                 <th>User</th>
                 <th>Group</th>
+                <th>Role</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th>Logged In</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {recentUsers.map((u) => {
-                const group = groupStats.find((item) => item.id === u.group_id);
+                const group = allGroups.find((item) => item.id === u.group_id);
                 return (
                   <tr key={u.id}>
                     <td>
-                      <strong style={{ color: 'var(--neutral-900)' }}>{u.username}</strong>
+                      <strong style={{ color: 'var(--neutral-900)' }}>{u.employee_name || u.username}</strong>
+                      <span style={{ display: 'block', fontSize: 'var(--font-size-xs)', color: 'var(--neutral-500)' }}>{u.username}</span>
                     </td>
                     <td>
                       <span className={`badge ${group ? 'badge-primary' : 'badge-neutral'}`}>
                         {group?.name || 'Unassigned'}
                       </span>
                     </td>
+                    <td>{u.role || '--'}</td>
                     <td>
                       <span className={`badge ${u.status === 'Active' ? 'badge-success' : 'badge-danger'}`}>
                         {u.status || 'Active'}
@@ -227,6 +225,16 @@ export default function DashboardPage() {
                     </td>
                     <td style={{ fontSize: 'var(--font-size-xs)', color: 'var(--neutral-500)' }}>
                       {formatLocalDateTime(u.created_at)}
+                    </td>
+                    <td style={{ fontSize: 'var(--font-size-xs)', color: 'var(--neutral-500)' }}>
+                      {formatLocalDateTime(
+                        u.last_login
+                          || u.logged_in_at
+                          || u.login_time
+                          || u.last_seen
+                          || u.last_active_at
+                          || u.lastLoginAt
+                      )}
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '6px' }}>

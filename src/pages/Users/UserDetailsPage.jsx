@@ -29,13 +29,7 @@ export default function UserDetailsPage() {
           getUserById(userId),
           getAllGroups(),
         ]);
-        setGroups(groupList.filter((group) => {
-          const groupName = group.name?.trim().toLowerCase();
-          return group.id !== 'admin'
-            && group.id !== 'field_worker'
-            && groupName !== 'supervisor'
-            && groupName !== 'field worker';
-        }));
+        setGroups(groupList);
         if (u) {
           setUser(u);
           setSelectedGroup(u.group_id || '');

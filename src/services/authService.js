@@ -11,6 +11,7 @@ import {
   getDoc,
   setDoc,
   serverTimestamp,
+  updateDoc,
   collection,
   query,
   where,
@@ -79,6 +80,7 @@ export async function loginWithUsernameOrEmail(identifier, password) {
 
   if (userDocSnap.exists()) {
     profile = { uid: user.uid, ...userDocSnap.data() };
+    await updateDoc(userDocRef, { last_login: serverTimestamp() });
     // Guarantee Super Admin role for admin@gmail.com
     if (isSuperAdmin && profile.role !== 'super_admin') {
       profile.role = 'super_admin';
@@ -97,6 +99,7 @@ export async function loginWithUsernameOrEmail(identifier, password) {
       permissions: isSuperAdmin ? ['*'] : [],
       status: 'Active',
       created_at: serverTimestamp(),
+      last_login: serverTimestamp(),
       updated_at: serverTimestamp(),
     };
     await setDoc(userDocRef, profile);
@@ -140,7 +143,9 @@ export async function changeUserPassword(currentPassword, newPassword) {
  * - Cannot create another Super Admin account.
  */
 export async function createUserSecurely({
+  employeeName,
   username,
+  role,
   password,
   groupId,
   status = 'Active',
@@ -151,6 +156,10 @@ export async function createUserSecurely({
 
   if (!groupId) {
     throw new Error('A group is required when creating a user.');
+  }
+
+  if (!employeeName?.trim()) {
+    throw new Error('Employee name is required.');
   }
 
   const cleanUsername = username.trim().toLowerCase();
@@ -189,9 +198,11 @@ export async function createUserSecurely({
   const userDocRef = doc(db, 'users', newUid);
   const userData = {
     user_id: newUid,
+    employee_name: employeeName.trim(),
     username: cleanUsername,
     email: email,
     group_id: groupId,
+    role: role?.trim() || '',
     status: status,
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),

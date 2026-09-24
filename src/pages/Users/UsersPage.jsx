@@ -44,15 +44,8 @@ export default function UsersPage() {
         );
       });
       setUsers(workforce);
-      setGroups(
-        fetchedGroups.filter((group) => {
-          const groupName = group.name?.trim().toLowerCase();
-          return group.id !== 'admin'
-            && group.id !== 'field_worker'
-            && groupName !== 'supervisor'
-            && groupName !== 'field worker';
-        })
-      );
+      // Keep every group returned from Firestore, including groups with zero users.
+      setGroups(fetchedGroups);
     } catch (err) {
       console.error('Error fetching users:', err);
       showToast('Failed to load user list from Firestore.', 'error');
@@ -106,7 +99,7 @@ export default function UsersPage() {
             {(row.username || 'U').charAt(0).toUpperCase()}
           </div>
           <div className="user-profile-details">
-            <span className="user-username-label">{row.username}</span>
+            <span className="user-username-label">{row.employee_name || row.username}</span>
             <span className="user-email-label">{row.email || `${row.username}@expensetracker.com`}</span>
           </div>
         </div>
@@ -126,6 +119,11 @@ export default function UsersPage() {
           </span>
         );
       },
+    },
+    {
+      header: 'Role',
+      accessor: 'role',
+      render: (row) => <span>{row.role || '--'}</span>,
     },
     {
       header: 'Status',
@@ -155,6 +153,22 @@ export default function UsersPage() {
       render: (row) => (
         <span className="user-created-date">
           {formatLocalDateTime(row.created_at)}
+        </span>
+      ),
+    },
+    {
+      header: 'Logged In',
+      accessor: 'last_login',
+      render: (row) => (
+        <span className="user-created-date">
+          {formatLocalDateTime(
+            row.last_login
+              || row.logged_in_at
+              || row.login_time
+              || row.last_seen
+              || row.last_active_at
+              || row.lastLoginAt
+          )}
         </span>
       ),
     },

@@ -71,7 +71,7 @@ export default function GroupsPage() {
         getAllGroups(),
         getAllSchedules(),
       ]);
-      setGroups(fetchedGroups.filter((group) => group.id !== 'admin' && group.id !== 'field_worker'));
+      setGroups(fetchedGroups);
       setSchedules(fetchedSchedules);
     } catch (err) {
       console.error('Error loading groups:', err);

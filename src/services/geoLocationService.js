@@ -46,6 +46,12 @@ export async function getUserGeoLocations(userId, selectedDate, groupSchedule, s
     );
     const snap = await getDocs(q);
     rawDocs = snap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+    // A type/field mismatch can produce an empty snapshot without an error.
+    // Read the collection so string timestamps and alternate Flutter fields are handled.
+    if (rawDocs.length === 0) {
+      const fallbackSnap = await getDocs(locationsRef);
+      rawDocs = fallbackSnap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+    }
   } catch (err) {
     // If composite index is building or timestamps are stored as ISO strings / numbers,
     // fetch user's locations and perform robust in-memory date boundary filtering
@@ -55,8 +61,22 @@ export async function getUserGeoLocations(userId, selectedDate, groupSchedule, s
   }
 
   // 1. Strict Date Filter: Ensure each record strictly falls between start and end of selected date
-  const dateFiltered = rawDocs.filter((record) => {
-    const d = toDate(record.timestamp || record.created_at);
+  const getRecordDate = (record) => toDate(
+    record.timestamp
+      || record.created_at
+      || record.recorded_at
+      || record.location_time
+      || record.date
+      || record.createdAt
+  );
+
+  const dateFiltered = rawDocs.map((record) => ({
+    ...record,
+    timestamp: record.timestamp || record.created_at || record.recorded_at || record.location_time || record.date || record.createdAt,
+    latitude: record.latitude ?? record.lat,
+    longitude: record.longitude ?? record.lng ?? record.lon,
+  })).filter((record) => {
+    const d = getRecordDate(record);
     if (!d) return false;
     return d.getTime() >= start.getTime() && d.getTime() <= end.getTime();
   });
@@ -68,14 +88,14 @@ export async function getUserGeoLocations(userId, selectedDate, groupSchedule, s
 
   // 3. Schedule Filter: Only records falling within the group schedule
   const scheduleFiltered = validCoordinates.filter((record) => {
-    const d = toDate(record.timestamp || record.created_at);
+    const d = getRecordDate(record);
     return isWithinSchedule(d, groupSchedule, tz);
   });
 
   // Sort records
   scheduleFiltered.sort((a, b) => {
-    const timeA = toDate(a.timestamp || a.created_at)?.getTime() || 0;
-    const timeB = toDate(b.timestamp || b.created_at)?.getTime() || 0;
+    const timeA = getRecordDate(a)?.getTime() || 0;
+    const timeB = getRecordDate(b)?.getTime() || 0;
     return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
   });
 
@@ -95,7 +115,14 @@ export function calculateLocationExtremes(records) {
   }
 
   const times = records
-    .map((r) => toDate(r.timestamp || r.created_at)?.getTime())
+    .map((r) => toDate(
+      r.timestamp
+        || r.created_at
+        || r.recorded_at
+        || r.location_time
+        || r.date
+        || r.createdAt
+    )?.getTime())
     .filter(Boolean)
     .sort((a, b) => a - b);
 

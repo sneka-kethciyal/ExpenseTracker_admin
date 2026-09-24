@@ -7,7 +7,9 @@ import { createUserSecurely } from '../../services/authService';
 import { useNotification } from '../../hooks/useNotification';
 
 export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups = [] }) {
+  const [employeeName, setEmployeeName] = useState('');
   const [username, setUsername] = useState('');
+  const [role, setRole] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [groupId, setGroupId] = useState('');
@@ -17,11 +19,7 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups
   const [formErrors, setFormErrors] = useState({});
 
   const { showToast } = useNotification();
-  const availableGroups = groups.filter(
-    (group) => group.id !== 'admin' && group.id !== 'field_worker'
-      && group.name?.trim().toLowerCase() !== 'supervisor'
-      && group.name?.trim().toLowerCase() !== 'field worker'
-  );
+  const availableGroups = groups;
 
   useEffect(() => {
     if (isOpen && !availableGroups.some((group) => group.id === groupId)) {
@@ -30,7 +28,9 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups
   }, [isOpen, availableGroups, groupId]);
 
   const resetForm = () => {
+    setEmployeeName('');
     setUsername('');
+    setRole('');
     setPassword('');
     setConfirmPassword('');
     setGroupId('');
@@ -46,6 +46,10 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = {};
+
+    if (!employeeName.trim()) {
+      errors.employeeName = 'Employee name is required.';
+    }
 
     const usernameErr = validateUsername(username);
     if (usernameErr) errors.username = usernameErr;
@@ -71,7 +75,9 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups
 
     try {
       const newUser = await createUserSecurely({
+        employeeName,
         username,
+        role,
         password,
         groupId,
         status,
@@ -101,6 +107,23 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups
             {formErrors.submit}
           </div>
         )}
+
+        <div className="form-group">
+          <label htmlFor="create-employee-name">Employee Name *</label>
+          <input
+            id="create-employee-name"
+            type="text"
+            placeholder="e.g. John Doe"
+            value={employeeName}
+            onChange={(e) => setEmployeeName(e.target.value)}
+            disabled={loading}
+          />
+          {formErrors.employeeName && (
+            <span style={{ color: 'var(--danger-main)', fontSize: 'var(--font-size-xs)' }}>
+              {formErrors.employeeName}
+            </span>
+          )}
+        </div>
 
         <div className="form-group">
           <label htmlFor="create-username">Username *</label>
@@ -142,6 +165,23 @@ export default function CreateUserModal({ isOpen, onClose, onUserCreated, groups
           {formErrors.group && (
             <span style={{ color: 'var(--danger-main)', fontSize: 'var(--font-size-xs)' }}>
               {formErrors.group}
+            </span>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="create-role">Role</label>
+          <input
+            id="create-role"
+            type="text"
+            placeholder="e.g. Field Executive"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            disabled={loading}
+          />
+          {formErrors.role && (
+            <span style={{ color: 'var(--danger-main)', fontSize: 'var(--font-size-xs)' }}>
+              {formErrors.role}
             </span>
           )}
         </div>

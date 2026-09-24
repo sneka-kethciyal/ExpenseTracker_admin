@@ -42,6 +42,7 @@ export default function GeoLocationPage() {
   const [groups, setGroups] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(initialUserId);
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
+  const [selectedMonth, setSelectedMonth] = useState(() => getLocalDateString().slice(0, 7));
   const [sortOrder, setSortOrder] = useState('desc'); // 'desc' | 'asc'
 
   const [groupSchedule, setGroupSchedule] = useState(null);
@@ -128,6 +129,12 @@ export default function GeoLocationPage() {
 
   const selectedUser = users.find((u) => u.id === selectedUserId);
   const selectedGroup = groups.find((group) => group.id === selectedUser?.group_id);
+  const firstDayOfMonth = `${selectedMonth}-01`;
+  const lastDayOfMonth = `${selectedMonth}-${new Date(
+    Number(selectedMonth.slice(0, 4)),
+    Number(selectedMonth.slice(5, 7)),
+    0
+  ).getDate().toString().padStart(2, '0')}`;
   const now = new Date();
   const isCurrentlyInSchedule = isWithinSchedule(now, groupSchedule, DEFAULT_TIMEZONE);
 
@@ -232,6 +239,25 @@ export default function GeoLocationPage() {
         </div>
 
         <div className="geo-control-item">
+          <label htmlFor="geo-month-picker">
+            <Calendar size={14} style={{ display: 'inline', marginRight: '4px' }} />
+            Select Month
+          </label>
+          <input
+            id="geo-month-picker"
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => {
+              const month = e.target.value;
+              setSelectedMonth(month);
+              if (!selectedDate.startsWith(`${month}-`)) {
+                setSelectedDate(`${month}-01`);
+              }
+            }}
+          />
+        </div>
+
+        <div className="geo-control-item">
           <label htmlFor="geo-date-picker">
             <Calendar size={14} style={{ display: 'inline', marginRight: '4px' }} />
             Select Date (IST)
@@ -240,6 +266,8 @@ export default function GeoLocationPage() {
             id="geo-date-picker"
             type="date"
             value={selectedDate}
+            min={firstDayOfMonth}
+            max={lastDayOfMonth}
             onChange={(e) => setSelectedDate(e.target.value)}
           />
         </div>
